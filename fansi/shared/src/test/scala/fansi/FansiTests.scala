@@ -24,7 +24,7 @@ object FansiTests extends TestSuite{
   val tests = TestSuite{
     val rgbOps = s"+++$R---$G***$B///"
     val rgb = s"$R$G$B"
-    'parsing{
+    "parsing"-{
       val r = fansi.Str(rgbOps).render
       assert(
         fansi.Str(rgbOps).plainText == "+++---***///",
@@ -34,22 +34,22 @@ object FansiTests extends TestSuite{
       )
     }
 
-    'equality{
+    "equality"-{
       assert(fansi.Color.Red("foo") == fansi.Color.Red("foo"))
     }
-    'concat{
+    "concat"-{
       val concated = (fansi.Str(rgbOps) ++ fansi.Str(rgbOps)).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
 
       assert(concated == expected)
     }
-    'join{
+    "join"-{
       val concated = fansi.Str.join(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
 
       assert(concated == expected)
     }
-    'get{
+    "get"-{
       val str = fansi.Str(rgbOps)
       val w = fansi.Attrs.Empty.transform(0)
       val r = fansi.Color.Red.transform(0)
@@ -86,7 +86,7 @@ object FansiTests extends TestSuite{
 
     }
 
-    'split{
+    "split"-{
       val splits = Seq(
         // These are the standard series
         (0,  s"", s"+++$R---$G***$B///$RTC"),
@@ -111,7 +111,7 @@ object FansiTests extends TestSuite{
         assert((left, right) == (expectedLeft, expectedRight))
       }
     }
-    'substring{
+    "substring"-{
       val substringed = fansi.Str(rgbOps).substring(4, 9).render
       assert(substringed == s"$R--$G***$RTC")
 
@@ -125,60 +125,60 @@ object FansiTests extends TestSuite{
       assert(noOpSubstringed2 == default)
     }
 
-    'overlay{
-      'simple{
+    "overlay"-{
+      "simple"-{
         val overlayed = fansi.Str(rgbOps).overlay(fansi.Color.Yellow, 4, 7)
         val expected = s"+++$R-$Y--*$G**$B///$RTC"
         assert(overlayed.render == expected)
       }
-      'resetty{
+      "resetty"-{
         val resetty = s"+$RES++$R--$RES-$RES$G***$B///"
         val overlayed = fansi.Str(resetty).overlay(fansi.Color.Yellow, 4, 7).render
         val expected = s"+++$R-$Y--*$G**$B///$RTC"
         assert(overlayed == expected)
       }
-      'mixedResetUnderline{
+      "mixedResetUnderline"-{
         val resetty = s"+$RES++$R--$RES-$UND$G***$B///"
         val overlayed = fansi.Str(resetty).overlay(fansi.Color.Yellow, 4, 7).render.toVector
         val expected = s"+++$R-$Y--$UND*$G**$B///$DCOL$DUND".toVector
 
         assert(overlayed == expected)
       }
-      'underlines{
+      "underlines"-{
         val resetty = s"$UND#$RES    $UND#$RES"
-        'underlineBug{
+        "underlineBug"-{
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 2).render
           val expected = s"$UND$REV#$DUND $DREV   $UND#$DUND"
           assert(overlayed == expected)
         }
-        'barelyOverlapping{
+        "barelyOverlapping"-{
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 1).render
           val expected = s"$UND$REV#$DUND$DREV    $UND#$DUND"
           assert(overlayed == expected)
         }
-        'endOfLine{
+        "endOfLine"-{
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 5, 6).render
           val expected = s"$UND#$DUND    $UND$REV#$DUND$DREV"
           assert(overlayed == expected)
         }
-        'overshoot{
+        "overshoot"-{
           intercept[IllegalArgumentException]{
             fansi.Str(resetty).overlay(fansi.Reversed.On, 5, 10)
           }
         }
-        'empty{
+        "empty"-{
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 0).render
           val expected = s"$UND#$DUND    $UND#$DUND"
           assert(overlayed == expected)
         }
-        'singleContent{
+        "singleContent"-{
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 2, 4).render
           val expected = s"$UND#$DUND $REV  $DREV $UND#$DUND"
           assert(overlayed == expected)
 
         }
       }
-      'overallAll{
+      "overallAll"-{
         //s"+++$R---$G***$B///"
         val overlayed = fansi.Str(rgbOps).overlayAll(Seq(
           (fansi.Color.Yellow, 4, 7),
@@ -191,7 +191,7 @@ object FansiTests extends TestSuite{
         overlayed
       }
     }
-    'attributes{
+    "attributes"-{
       * - {
         Console.RESET + fansi.Underlined.On
       }
@@ -226,38 +226,38 @@ object FansiTests extends TestSuite{
     }
 
 
-    'colors - tabulate(fansi.Color.all)
+    "colors" - tabulate(fansi.Color.all)
 
-    'backgrounds - tabulate(fansi.Back.all)
+    "backgrounds" - tabulate(fansi.Back.all)
 
-    'trueColor - {
-      'red - fansi.Color.True(255,0,0)
+    "trueColor" - {
+      "red" - fansi.Color.True(255,0,0)
 
-      'redhexa - fansi.Color.True(0xFF0000)
+      "redhexa" - fansi.Color.True(0xFF0000)
 
-      'green - fansi.Color.True(0,255,0)
+      "green" - fansi.Color.True(0,255,0)
 
-      'greenhexa - fansi.Color.True(0x00FF00)
+      "greenhexa" - fansi.Color.True(0x00FF00)
 
-      'blue - fansi.Color.True(0,0,255)
+      "blue" - fansi.Color.True(0,0,255)
 
-      'bluehaxe - fansi.Color.True(0x0000FF)
+      "bluehaxe" - fansi.Color.True(0x0000FF)
 
       "256 shades of gray" - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
 
-      'trueColors - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Color.True(i))
+      "trueColors" - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Color.True(i))
 
-      'trueBackgrounds - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Back.True(i))
+      "trueBackgrounds" - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Back.True(i))
 
-      'blackState - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
+      "blackState" - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
 
-      'whitState -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
+      "whitState" -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
 
-      'redState -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
+      "redState" -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
 
-      'lastFullState - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
+      "lastFullState" - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
 
-      'parsing - {
+      "parsing" - {
         def check(frag: fansi.Str) = {
           val parsed = fansi.Str(frag.render)
           assert(parsed == frag)
@@ -278,8 +278,8 @@ object FansiTests extends TestSuite{
 
 
       }
-      'failure{
-        'tooLongToParse{
+      "failure"-{
+        "tooLongToParse"-{
           * - intercept[IllegalArgumentException]{
             fansi.Str("\u001b[38;2;0;0;256m").plainText.toSeq.map(_.toInt)
           }
@@ -293,14 +293,14 @@ object FansiTests extends TestSuite{
             fansi.Str("\u001b[38;2;1111;0;0m").plainText.toSeq.map(_.toInt)
           }
         }
-        'truncatedParsing - {
+        "truncatedParsing" - {
           val escape = fansi.Color.True(255, 0, 0).escape
           for (i <- 1 until escape.length - 1)
           yield intercept[IllegalArgumentException] {
             fansi.Str(escape.dropRight(i))
           }
         }
-        'args{
+        "args"-{
           * - intercept[IllegalArgumentException]{ fansi.Color.True(256, 0, 0) }
           * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 256, 0) }
           * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, 256) }
@@ -311,12 +311,12 @@ object FansiTests extends TestSuite{
       }
     }
 
-    'emitAnsiCodes{
-      'basic - assert(
+    "emitAnsiCodes"-{
+      "basic" - assert(
         fansi.Attrs.emitAnsiCodes(0, fansi.Color.Red.applyMask) == Console.RED,
         fansi.Attrs.emitAnsiCodes(fansi.Color.Red.applyMask, 0) == fansi.Color.Reset.escape
       )
-      'combo - {
+      "combo" - {
         // One color stomps over the other
         val colorColor = fansi.Color.Red ++ fansi.Color.Blue
         assert(fansi.Attrs.emitAnsiCodes(0, colorColor.applyMask) == Console.BLUE)
@@ -330,8 +330,8 @@ object FansiTests extends TestSuite{
 
     }
 
-    'negative{
-      'errorMode{
+    "negative"-{
+      "errorMode"-{
         // Make sure that fansi.Str throws on most common non-color
         // fansi terminal commands
         //
@@ -354,27 +354,27 @@ object FansiTests extends TestSuite{
           assert(stripped.plainText == "HelloWorld")
         }
 
-        'cursorUp - check("Hello\u001b[2AWorld", "[2A")
-        'cursorDown- check("Hello\u001b[2BWorld", "[2B")
-        'cursorForward - check("Hello\u001b[2CWorld", "[2C")
-        'cursorBack - check("Hello\u001b[2DWorld", "[2D")
-        'cursorNextLine - check("Hello\u001b[2EWorld", "[2E")
-        'cursorPrevLine - check("Hello\u001b[2FWorld", "[2F")
-        'cursorHorizontalAbs - check("Hello\u001b[2GWorld", "[2G")
-        'cursorPosition- check("Hello\u001b[2;2HWorld", "[2;2H")
-        'eraseDisplay - check("Hello\u001b[2JWorld", "[2J")
-        'eraseLine - check("Hello\u001b[2KWorld", "[2K")
-        'scrollUp - check("Hello\u001b[2SWorld", "[2S")
-        'scrollDown - check("Hello\u001b[2TWorld", "[2T")
-        'horizontalVerticalPos - check("Hello\u001b[2;2fWorld", "[2;2f")
-        'selectGraphicRendition - check("Hello\u001b[2mWorld", "[2m")
-        'auxPortOn - check("Hello\u001b[5iWorld", "[5i")
-        'auxPortOff - check("Hello\u001b[4iWorld", "[4i")
-        'deviceStatusReport - check("Hello\u001b[6nWorld", "[6n")
-        'saveCursor - check("Hello\u001b[sWorld", "[s")
-        'restoreCursor - check("Hello\u001b[uWorld", "[u")
+        "cursorUp" - check("Hello\u001b[2AWorld", "[2A")
+        "cursorDown"- check("Hello\u001b[2BWorld", "[2B")
+        "cursorForward" - check("Hello\u001b[2CWorld", "[2C")
+        "cursorBack" - check("Hello\u001b[2DWorld", "[2D")
+        "cursorNextLine" - check("Hello\u001b[2EWorld", "[2E")
+        "cursorPrevLine" - check("Hello\u001b[2FWorld", "[2F")
+        "cursorHorizontalAbs" - check("Hello\u001b[2GWorld", "[2G")
+        "cursorPosition"- check("Hello\u001b[2;2HWorld", "[2;2H")
+        "eraseDisplay" - check("Hello\u001b[2JWorld", "[2J")
+        "eraseLine" - check("Hello\u001b[2KWorld", "[2K")
+        "scrollUp" - check("Hello\u001b[2SWorld", "[2S")
+        "scrollDown" - check("Hello\u001b[2TWorld", "[2T")
+        "horizontalVerticalPos" - check("Hello\u001b[2;2fWorld", "[2;2f")
+        "selectGraphicRendition" - check("Hello\u001b[2mWorld", "[2m")
+        "auxPortOn" - check("Hello\u001b[5iWorld", "[5i")
+        "auxPortOff" - check("Hello\u001b[4iWorld", "[4i")
+        "deviceStatusReport" - check("Hello\u001b[6nWorld", "[6n")
+        "saveCursor" - check("Hello\u001b[sWorld", "[s")
+        "restoreCursor" - check("Hello\u001b[uWorld", "[u")
       }
-      'outOfBounds{
+      "outOfBounds"-{
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(10) }
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(4) }
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(-1) }
@@ -383,22 +383,22 @@ object FansiTests extends TestSuite{
         intercept[IllegalArgumentException]{ fansi.Str("foo").substring(2, 1)}
       }
     }
-    'multipleAttrs{
-      'identicalMasksGetCollapsed{
+    "multipleAttrs"-{
+      "identicalMasksGetCollapsed"-{
         val redRed = fansi.Color.Red ++ fansi.Color.Red
         assert(
           redRed.resetMask == fansi.Color.Red.resetMask,
           redRed.applyMask == fansi.Color.Red.applyMask
         )
       }
-      'overlappingMasksGetReplaced{
+      "overlappingMasksGetReplaced"-{
         val redBlue = fansi.Color.Red ++ fansi.Color.Blue
         assert(
           redBlue.resetMask == fansi.Color.Blue.resetMask,
           redBlue.applyMask == fansi.Color.Blue.applyMask
         )
       }
-      'semiOverlappingMasks{
+      "semiOverlappingMasks"-{
         val resetRed = fansi.Attr.Reset ++ fansi.Color.Red
         val redReset = fansi.Color.Red ++ fansi.Attr.Reset
         assert(
@@ -411,7 +411,7 @@ object FansiTests extends TestSuite{
           resetRed.applyMask == fansi.Color.Red.applyMask
         )
       }
-      'separateMasksGetCombined{
+      "separateMasksGetCombined"-{
         val redBold = fansi.Color.Red ++ fansi.Bold.On
 
         assert(
@@ -419,13 +419,13 @@ object FansiTests extends TestSuite{
           redBold.applyMask == (fansi.Color.Red.applyMask | fansi.Bold.On.applyMask)
         )
       }
-      'applicationWorks{
+      "applicationWorks"-{
         val redBlueBold = fansi.Color.Red ++ fansi.Color.Blue ++ fansi.Bold.On
         val colored = redBlueBold("Hello World")
         val separatelyColored = fansi.Bold.On(fansi.Color.Blue(fansi.Color.Red("Hello World")))
         assert(colored.render == separatelyColored.render)
       }
-      'equality{
+      "equality"-{
         assert(
           fansi.Color.Blue ++ fansi.Color.Red == fansi.Color.Red,
           fansi.Color.Red == fansi.Color.Blue ++ fansi.Color.Red,
@@ -434,10 +434,10 @@ object FansiTests extends TestSuite{
         )
       }
     }
-//    'perf{
+//    "perf"-{
 //      val input = s"+++$R---$G***$B///" * 1000
 //
-//      'parsing{
+//      "parsing"-{
 //
 //        val start = System.currentTimeMillis()
 //        var count = 0
@@ -448,7 +448,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'rendering{
+//      "rendering"-{
 //
 //        val start = System.currentTimeMillis()
 //        var count = 0
@@ -460,7 +460,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'concat{
+//      "concat"-{
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
@@ -471,7 +471,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'splitAt{
+//      "splitAt"-{
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
@@ -482,7 +482,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'substring{
+//      "substring"-{
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
@@ -495,7 +495,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'overlay{
+//      "overlay"-{
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
